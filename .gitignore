@@ -1,1 +1,18 @@
-node_modules
+# Node.js
+node_modules/
+.env
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.prettierrc.local
+coverage/
+build/
+dist/
+*.log
+*.pid
+*.seed
+*.pid.lock
+.npm/
+.node_repl_history
