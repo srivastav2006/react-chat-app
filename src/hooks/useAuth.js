@@ -4,7 +4,7 @@ import {
   signOut, 
   onAuthStateChanged 
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, googleProvider, db } from '../services/firebase';
 
 export const useAuth = () => {
@@ -14,22 +14,37 @@ export const useAuth = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Create/update user document in Firestore
-        const userRef = doc(db, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        
-        if (!userSnap.exists()) {
-          await setDoc(userRef, {
+        try {
+          // Create/update user document in Firestore
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          
+          const userData = {
             uid: user.uid,
             displayName: user.displayName,
             email: user.email,
             photoURL: user.photoURL,
-            lastSeen: new Date(),
-            online: true
-          });
+            lastSeen: serverTimestamp(),
+            online: true,
+            createdAt: userSnap.exists() ? userSnap.data().createdAt : serverTimestamp()
+          };
+
+          if (!userSnap.exists()) {
+            await setDoc(userRef, userData);
+          } else {
+            await updateDoc(userRef, {
+              online: true,
+              lastSeen: serverTimestamp(),
+              photoURL: user.photoURL,
+              displayName: user.displayName
+            });
+          }
+          
+          setUser(user);
+        } catch (error) {
+          console.error('Error updating user data:', error);
+          setUser(user);
         }
-        
-        setUser(user);
       } else {
         setUser(null);
       }
@@ -41,9 +56,13 @@ export const useAuth = () => {
 
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      setLoading(true);
+      const result = await signInWithPopup(auth, googleProvider);
+      return result;
     } catch (error) {
       console.error('Error signing in:', error);
+      setLoading(false);
+      throw error;
     }
   };
 
@@ -52,7 +71,10 @@ export const useAuth = () => {
       // Update user status to offline
       if (user) {
         const userRef = doc(db, 'users', user.uid);
-        await setDoc(userRef, { online: false, lastSeen: new Date() }, { merge: true });
+        await updateDoc(userRef, { 
+          online: false, 
+          lastSeen: serverTimestamp() 
+        });
       }
       await signOut(auth);
     } catch (error) {

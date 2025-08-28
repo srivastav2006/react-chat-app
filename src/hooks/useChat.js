@@ -6,8 +6,13 @@ export const useChat = (chatId) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!chatId) return;
+    if (!chatId) {
+      setMessages([]);
+      setLoading(false);
+      return;
+    }
 
+    setLoading(true);
     const unsubscribe = subscribeToMessages(chatId, (snapshot) => {
       const newMessages = snapshot.docs.map(doc => ({
         id: doc.id,

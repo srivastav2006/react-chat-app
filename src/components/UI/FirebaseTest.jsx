@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { auth, db } from '../services/firebase';
-import { signInWithPopup, googleProvider } from '../services/firebase';
+import { auth, db } from '../../services/firebase';
+import { signInWithPopup, googleProvider } from '../../services/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
 const FirebaseTest = () => {

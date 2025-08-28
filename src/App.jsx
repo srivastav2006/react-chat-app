@@ -5,7 +5,6 @@ import { Header } from './components/Layout/Header';
 import { UserList } from './components/Chat/UserList';
 import { ChatRoom } from './components/Chat/ChatRoom';
 import './styles/globals.css';
-import FirebaseTest from './components/FirebaseTest';
 
 function App() {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -18,11 +17,11 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
+      <div className="App min-h-screen bg-slate-50">
         <ProtectedRoute>
           <div className="h-screen flex flex-col">
             <Header />
-            <div className="flex-1 flex">
+            <div className="flex-1 flex overflow-hidden">
               <UserList 
                 onUserSelect={handleUserSelect}
                 selectedUserId={selectedUser?.uid}
