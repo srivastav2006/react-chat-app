@@ -37,7 +37,7 @@ export const MessageList = ({ messages, selectedUser }) => {
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
       {messages.map((message, index) => {
-        const isOwnMessage = message.senderId === user.uid;
+        const isOwnMessage = user && message.senderId === user.uid;
         const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
         
         return (

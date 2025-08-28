@@ -5,7 +5,7 @@ import { Button } from '../UI/Button';
 import { useChat } from '../../hooks/useChat';
 import { Phone, Video, MoreVertical, MessageCircle } from 'lucide-react';
 
-export const ChatRoom = ({ selectedUser, chatId }) => {
+export const ChatRoom = ({ selectedUser, chatId, onStartAudioCall, onStartVideoCall }) => {
   const { messages, loading } = useChat(chatId);
 
   if (!selectedUser) {
@@ -43,10 +43,10 @@ export const ChatRoom = ({ selectedUser, chatId }) => {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => onStartAudioCall && onStartAudioCall(selectedUser)}>
               <Phone className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => onStartVideoCall && onStartVideoCall(selectedUser)}>
               <Video className="w-4 h-4" />
             </Button>
             <Button variant="ghost" size="sm">

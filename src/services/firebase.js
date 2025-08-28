@@ -1,8 +1,8 @@
 // src/services/firebase.js
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported as isAnalyticsSupported } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore,connectFirestoreEmulator } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
@@ -24,7 +24,15 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-export const analytics = getAnalytics(app);
+// Initialize Analytics only if supported (avoids SSR/unsupported environment errors)
+export let analytics = null;
+isAnalyticsSupported().then((supported) => {
+  if (supported) {
+    analytics = getAnalytics(app);
+  }
+}).catch(() => {
+  analytics = null;
+});
 
 // Configure Google Auth Provider
 export const googleProvider = new GoogleAuthProvider();
